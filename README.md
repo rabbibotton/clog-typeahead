@@ -8,7 +8,7 @@ CLOG Extension for https://github.com/twitter/typeahead.js
 
 The first text box on the test is a static list test.
 
-The second text is supplies a lisp call back to handle
+The second text supplies a lisp call back to handle
 the query and the list of possible choices based on
 the query. In this case it just returns the same static
 list -
