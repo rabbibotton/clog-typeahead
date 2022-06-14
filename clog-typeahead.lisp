@@ -4,11 +4,16 @@
 
 (in-package :clog-typeahead)
 
-(defun init-typeahead (body)
-  "Load the jQuery typeahead plugin."
-  (load-script (html-document body) "/js/typeahead.jquery.js"))
+(defun init-typeahead (obj)
+  "Load the jQuery typeahead plugin. Called on first attach-typeahead
+automatically."
+  (check-type obj clog:clog-obj)
+  ;; Only init once
+  (unless (connection-data-item obj "clog-typeahead-init")
+    (setf (connection-data-item obj "clog-typeahead-init") t)
+    (load-script (html-document obj) "/js/typeahead.jquery.js")))
 
-(defun attach-typeahead (clog-obj data
+(defun attach-typeahead (obj data
 			 &key (hint t) (highlight t)
 			   (minimum-length 1)
 			   (maximum-suggestions 10))
@@ -17,9 +22,11 @@ or a handler function with data, data being the form input and the
 handlers return value is list. If HINT shows top suggestion as
 background text. If HIGHLIGHT query matches within the suggestion are
 highlighted."
+  ;; Load js library if not already loaded
+  (init-typeahead obj)
   ;; handle the callback version of typeahead when DATA is a handler
   (when (typep data 'function)
-    (set-on-event-with-data clog-obj "clog-typeahead-data"
+    (set-on-event-with-data obj "clog-typeahead-data"
 			    (lambda (obj d)
 					; clog['~A-ab'] contains the async function
 					; set on event to call with typeahead data
@@ -28,7 +35,7 @@ highlighted."
 						      (mapcar (lambda (s)
 								(format nil "'~A'," s))
 							      (funcall data obj d)))))))
-  (jquery-execute clog-obj
+  (jquery-execute obj
     (format nil
 	    "typeahead({hint: ~A, highlight: ~A, minLength: ~A},~
                        {limit: ~A, ~
@@ -55,12 +62,11 @@ highlighted."
                          ~A.trigger('clog-typeahead-data',q);
                          cb([]);
                          clog['~A-ab']=ab;"
-				(jquery clog-obj)
-				(html-id clog-obj)))))))
+				(jquery obj)
+				(html-id obj)))))))
 
 (defun test-typeahead (body)
   (clog:debug-mode body)
-  (init-typeahead body)
   (create-style-block body :content
 ".typeahead,
 .tt-query,

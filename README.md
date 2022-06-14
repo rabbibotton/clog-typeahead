@@ -17,8 +17,7 @@ Usage:
 
 In you .asd file add to your :depends :clog-typeahead
 
-In your code use (init-typeahead body) on-new-window
-and attach to any form control (usually form text inputs)
+Attach to any form control (usually form text inputs)
 you wish to have a drop down box using:
 
 ```
