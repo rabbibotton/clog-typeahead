@@ -11,7 +11,8 @@ automatically."
   ;; Only init once
   (unless (connection-data-item obj "clog-typeahead-init")
     (setf (connection-data-item obj "clog-typeahead-init") t)
-    (load-script (html-document obj) "/js/typeahead.jquery.js")))
+    (load-script (html-document (connection-data-item obj "clog-body"))
+		 "/js/typeahead.jquery.js")))
 
 (defun attach-typeahead (obj data
 			 &key (hint t) (highlight t)
@@ -22,7 +23,7 @@ or a handler function with data, data being the form input and the
 handlers return value is list. If HINT shows top suggestion as
 background text. If HIGHLIGHT query matches within the suggestion are
 highlighted."
-  ;; Load js library if not already loaded
+  ;; Load js library if not already loaded and check obj type
   (init-typeahead obj)
   ;; handle the callback version of typeahead when DATA is a handler
   (when (typep data 'function)
