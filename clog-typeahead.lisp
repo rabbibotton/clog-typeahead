@@ -5,8 +5,8 @@
 (in-package :clog-typeahead)
 
 (defun init-typeahead (obj)
-  "Load the jQuery typeahead plugin. Called on first attach-typeahead
-automatically."
+  "Load the jQuery typeahead javascript plugin. Called on first
+attach-typeahead automatically, so generally no need to call."
   (check-type obj clog:clog-obj)
   ;; Only init once
   (unless (connection-data-item obj "clog-typeahead-init")
@@ -120,7 +120,7 @@ highlighted."
 					; idealy we should use data to determine
 					; what list is returned
 				 '("one" "two" "three" "four")))))
-  
+
 (defun start-test ()
   (initialize 'test-typeahead
    :static-root (merge-pathnames "./www/"
