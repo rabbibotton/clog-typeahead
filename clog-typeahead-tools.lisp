@@ -1,8 +1,7 @@
 (in-package :clog-typeahead)
 
 (progn
-  (alexandria:appendf
-   clog-tools::*supported-controls*
+  (clog-tools:add-supported-controls
    (list `(;; unique name to control used to identify it the .clog xml
 	   :name           "input-typeahead"
 	   ;; how control appears in builder control list 
