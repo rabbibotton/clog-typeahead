@@ -24,7 +24,7 @@ To use with clog-builder and try it out:
 
 Usage (not using CLOG Builder):
 
-In you .asd file add to your :depends :clog-typeahead
+In you .asd file add to your :depends-on :clog-typeahead
 
 Attach to any form control (usually form text inputs)
 you wish to have a drop down box using:
@@ -43,7 +43,7 @@ within the suggestion are highlighted."
 
 Usage with CLOG Builder:
 
-In you .asd file add to your :depends :clog-typeahead
+In you .asd file add to your :depends-on :clog-typeahead
 Copy clog-typeahead/www/js/typeahead.jquery.js to your
 projects /www/js directory.
 
