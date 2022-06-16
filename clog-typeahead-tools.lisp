@@ -10,13 +10,17 @@
 	   :create-type    :form
 	   :create-param   :text
 	   :create-value   ""
+	   :setup          ,(lambda (control content control-record)
+                              (declare (ignore content) (ignore control-record))
+                              (setf (attribute control "data-on-typeahead")
+				    "(clog-typeahead:test-match data `(\"one\" \"two\" \"three\"))"))
 	   :on-setup       ,(lambda (control control-record)
                               (declare (ignore control control-record))
 			      (format nil "(clog-typeahead:init-typeahead target) ~
-				               (clog-typeahead:attach-typeahead target nil)"))
-	   :events         ((:name        "on-typeahead"
-			     :package     "clog-typeahead"
-			     :parameters  "target data")
+			                       (clog-typeahead:attach-typeahead target nil)"))
+           :events         ((:name        "on-typeahead"
+                             :package     "clog-typeahead"
+                             :parameters  "target data")
 			    ,@clog-tools::*events-element*)
 	   :properties     (,@clog-tools::*props-form-element*))))
   (format t "~%CLOG-TYPEAHEAD installed in CLOG Builder"))

@@ -3,6 +3,7 @@
   (:export init-typeahead
 	   attach-typeahead
 	   start-test
+	   test-match
 	   clog-typeahead-element
 	   create-typeahead-element
 	   set-on-typeahead))
