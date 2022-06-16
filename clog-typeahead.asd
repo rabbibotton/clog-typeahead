@@ -7,3 +7,7 @@
   :depends-on (#:clog)
   :components ((:file "clog-typeahead")))
 
+(asdf:defsystem #:clog-typeahead/tools
+  :depends-on (#:clog-typeahead #:clog/tools)
+  :components ((:file "clog-typeahead-tools")))
+

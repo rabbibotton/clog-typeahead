@@ -1,18 +1,57 @@
 (defpackage #:clog-typeahead
   (:use #:cl #:clog)
-  (:export init-typeahead attach-typeahead start-test))
+  (:export init-typeahead
+	   attach-typeahead
+	   start-test
+	   clog-typeahead-element
+	   create-typeahead-element
+	   set-on-typeahead))
 
 (in-package :clog-typeahead)
+
+(defclass clog-typeahead-element (clog-form-element)()
+  (:documentation "CLOG Typeahead Element Object."))
+
+(defmethod create-typeahead-element ((obj clog:clog-obj) element-type
+                                     &key (name nil)
+                                       (value nil)
+                                       (label nil)
+                                       (class nil)
+                                       (hidden nil)
+                                       (html-id nil))
+  (let ((new-obj (create-form-element obj element-type
+				      :name name
+				      :value value
+				      :label label
+				      :class class
+				      :hidden hidden
+				      :html-id html-id)))
+    (attach-typeahead new-obj nil)
+    (change-class new-obj 'clog-typeahead-element)))
+
+(defmethod set-on-typeahead ((obj clog:clog-obj) handler
+			     &key
+			       (cancel-event nil)
+			       (one-time     nil))
+  (set-on-event-with-data obj "clog-typeahead-data"
+			  (lambda (obj query)
+					; clog['~A-ab'] contains the async function
+					; set on event to call with typeahead data
+			    (js-execute obj (format nil "clog['~A-ab']([~{~A~}])"
+						    (html-id obj)
+						    (mapcar (lambda (s)
+							      (format nil "'~A'," s))
+							    (funcall handler obj query)))))
+			  :cancel-event cancel-event
+			  :one-time      one-time))
 
 (defun init-typeahead (obj)
   "Load the jQuery typeahead javascript plugin. Called on first
 attach-typeahead automatically, so generally no need to call."
   (check-type obj clog:clog-obj)
   ;; Only init once
-  (unless (connection-data-item obj "clog-typeahead-init")
-    (setf (connection-data-item obj "clog-typeahead-init") t)
-    (load-script (html-document (connection-data-item obj "clog-body"))
-		 "/js/typeahead.jquery.js")))
+  (load-script (html-document (connection-data-item obj "clog-body"))
+	       "/js/typeahead.jquery.js" :load-only-once t))
 
 (defun attach-typeahead (obj data
 			 &key (hint t) (highlight t)
@@ -20,22 +59,16 @@ attach-typeahead automatically, so generally no need to call."
 			   (maximum-suggestions 10))
   "Attach typeahead to a form input. DATA is a list of possible values
 or a handler function with data, data being the form input and the
-handlers return value is list. If HINT shows top suggestion as
-background text. If HIGHLIGHT query matches within the suggestion are
-highlighted."
+handlers return value is list or nil to set handler with set-on-typeahead.
+If HINT shows top suggestion as background text. If HIGHLIGHT query matches
+within the suggestion are highlighted."
   ;; Load js library if not already loaded and check obj type
   (init-typeahead obj)
-  ;; handle the callback version of typeahead when DATA is a handler
+  (print "doing attach")
+  ;; Handle the callback version of typeahead when DATA is a handler
   (when (typep data 'function)
-    (set-on-event-with-data obj "clog-typeahead-data"
-			    (lambda (obj d)
-					; clog['~A-ab'] contains the async function
-					; set on event to call with typeahead data
-			      (js-execute obj (format nil "clog['~A-ab']([~{~A~}])"
-						      (html-id obj)
-						      (mapcar (lambda (s)
-								(format nil "'~A'," s))
-							      (funcall data obj d)))))))
+    (set-on-typeahead obj data))
+  ;; Setup typeahead
   (jquery-execute obj
     (format nil
 	    "typeahead({hint: ~A, highlight: ~A, minLength: ~A},~
@@ -47,7 +80,7 @@ highlighted."
 	    minimum-length
 	    maximum-suggestions
 	    (typecase data
-	      (cons     (format nil "source: function findMatches(q, cb){~
+	      (cons (format nil "source: function findMatches(q, cb){~
                          var matches=[];~
                          var sr=new RegExp(q,'i');~
                          var strs=[~{~A~}];~
@@ -56,15 +89,16 @@ highlighted."
                              matches.push(str);~
                            }});~
                          cb(matches);"
-				(mapcar (lambda (s)
-					  (format nil "'~A'," s))
-					data)))
-	      (function (format nil "async: true, source: function findMatches(q, cb, ab){~
+			    (mapcar (lambda (s)
+				      (format nil "'~A'," s))
+				    data)))
+	      ;; Use callback if data is nil or data is function
+	      (t    (format nil "async: true, source: function findMatches(q, cb, ab){~
                          ~A.trigger('clog-typeahead-data',q);
                          cb([]);
                          clog['~A-ab']=ab;"
-				(jquery obj)
-				(html-id obj)))))))
+			    (jquery obj)
+			    (html-id obj)))))))
 
 (defun test-typeahead (body)
   (clog:debug-mode body)
