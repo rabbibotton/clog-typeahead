@@ -9,8 +9,18 @@
 
 (in-package :clog-typeahead)
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Implementation - clog-typeahead-clement
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 (defclass clog-typeahead-element (clog-form-element)()
-  (:documentation "CLOG Typeahead Element Object."))
+  (:documentation "CLOG Typeahead Element Object. The file:
+/js/typeahead.jquery.js must be installed in your project /js directory."))
+
+(defgeneric create-typeaheadelement (clog-obj element-type
+                                     &key name value label class
+                                       hidden html-id)
+  (:documentation "Create a new clog-typeahead-element as child of CLOG-OBJ."))
 
 (defmethod create-typeahead-element ((obj clog:clog-obj) element-type
                                      &key (name nil)
@@ -29,6 +39,14 @@
     (attach-typeahead new-obj nil)
     (change-class new-obj 'clog-typeahead-element)))
 
+(defgeneric set-on-typeahead (clog-obj handler
+			      &key cancel-event one-time)
+  (:documentation "Set a HANDLER for typeahead data queries on CLOG-OBJ.
+ If handler is nil unbind all event handlers. Handler is called with a
+data parameter that is the current query, ie the text in the control.
+The return value of this handler must be a list that will be the possible
+values based on that query."))
+
 (defmethod set-on-typeahead ((obj clog:clog-obj) handler
 			     &key
 			       (cancel-event nil)
@@ -44,6 +62,10 @@
 							    (funcall handler obj query)))))
 			  :cancel-event cancel-event
 			  :one-time      one-time))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Implementation - typeahead bindings to typeahead.js
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defun init-typeahead (obj)
   "Load the jQuery typeahead javascript plugin. Called on first
