@@ -64,7 +64,6 @@ If HINT shows top suggestion as background text. If HIGHLIGHT query matches
 within the suggestion are highlighted."
   ;; Load js library if not already loaded and check obj type
   (init-typeahead obj)
-  (print "doing attach")
   ;; Handle the callback version of typeahead when DATA is a handler
   (when (typep data 'function)
     (set-on-typeahead obj data))
