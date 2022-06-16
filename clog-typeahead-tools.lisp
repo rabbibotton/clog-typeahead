@@ -16,7 +16,7 @@
 				               (clog-typeahead:attach-typeahead target nil)"))
 	   :events         ((:name        "on-typeahead"
 			     :package     "clog-typeahead"
-			     :parameters  "target query")
+			     :parameters  "target data")
 			    ,@clog-tools::*events-element*)
 	   :properties     (,@clog-tools::*props-form-element*))))
   (format t "~%CLOG-TYPEAHEAD installed in CLOG Builder"))

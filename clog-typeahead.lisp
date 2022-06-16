@@ -121,6 +121,13 @@ within the suggestion are highlighted."
 			    (jquery obj)
 			    (html-id obj)))))))
 
+(defun test-match (data choices)
+  (let (matches)
+    (dolist (c choices)
+      (when (ppcre:scan data c)
+        (push c matches)))
+    matches))
+
 (defun test-typeahead (body)
   (clog:debug-mode body)
   (create-style-block body :content
@@ -171,10 +178,8 @@ within the suggestion are highlighted."
     ;; Using lisp function to return typeahead
     (add-class element2 "typeahead")
     (attach-typeahead element2 (lambda (obj data)
-				 (declare (ignore obj data))
-					; idealy we should use data to determine
-					; what list is returned
-				 '("one" "two" "three" "four")))))
+				 (declare (ignore obj))
+				 (test-match data '("one" "two" "three" "four"))))))
 
 (defun start-test ()
   (initialize 'test-typeahead
