@@ -1,6 +1,11 @@
 # clog-typeahead
 CLOG Extension and CLOG Builder Plug-in for https://github.com/twitter/typeahead.js
 
+
+The tutorial on creating this plug-in is at:
+https://docs.google.com/document/d/1EDODcnyijP_EjrDQTiA0AB-zbMQzvCo2HltXarw5q5A/
+
+
 To load clog-typeahead and test:
 
 ```
