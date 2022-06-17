@@ -31,8 +31,7 @@
 	   ;; code to run at _run time_ after all controls attached to panel
 	   :on-setup       ,(lambda (control control-record)
                               (declare (ignore control control-record))
-			      (format nil "(clog-typeahead:init-typeahead target) ~
-			                       (clog-typeahead:attach-typeahead target nil)"))
+			      (format nil "(clog-typeahead:attach-typeahead target nil)"))
 	   ;; events handled
            :events         ((:name        "on-typeahead"
                              :package     "clog-typeahead"
